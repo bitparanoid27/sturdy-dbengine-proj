@@ -1,0 +1,29 @@
+{
+  "name": "dbengine-proj",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "db": "node src/index.js",
+    "put": "node src/index.js put",
+    "get": "node src/index.js get",
+    "scan": "node src/index.js scan",
+    "delete": "node src/index.js delete",
+    "inspect": "node src/index.js inspect",
+    "inspect-format": "node src/index.js inspect-format",
+    "encode": "node src/index.js encode",
+    "decode": "node src/index.js decode",
+    "recover": "node src/index.js recover",
+    "compact": "node src/index.js compact",
+    "bench": "node src/index.js bench",
+    "test": "node src/index.js test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "private": "true",
+  "engines": {
+    "npm": "~24.0.00"
+  }
+}
