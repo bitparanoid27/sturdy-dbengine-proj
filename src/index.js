@@ -11,13 +11,9 @@ import {
 } from "./format.js";
 import { encodeDataToBytes } from "./encoder.js";
 
+// Retrieve user selected command.
 const receivedCommand = argv[2];
-const receivedKey = argv[3];
-const receivedValue = argv[4];
-
 const cleanedCommand = receivedCommand?.trim().toLowerCase();
-const cleanedKey = receivedKey?.trim().toLowerCase();
-const cleanedValue = receivedValue?.trim().toLowerCase();
 
 // if command received is help or undefined show the entire menu to navigate the project.
 let commands = {
@@ -86,16 +82,24 @@ const handlers = {
     process.exit(0);
   },
   encode: () => {
+    // Retrieve requested ops put || delete, and data
+    const requestedOps = argv[3];
+    const receivedKey = argv[4];
+    const receivedValue = argv[5];
+
+    const cleanedKey = receivedKey?.trim().toLowerCase();
+    const cleanedValue = receivedValue?.trim().toLowerCase();
+    const cleanedRequestedOps = requestedOps?.trim().toLowerCase();
+
     console.log("Running encode command");
-    let userSelection = userSelectedOperation(cleanedCommand);
+    let userSelection = userSelectedOperation(cleanedRequestedOps);
     let encodedBuffer = encodeDataToBytes(
       userSelection,
       cleanedKey,
       cleanedValue,
     );
     console.log(encodedBuffer);
-
-    // process.exit(0);
+    process.exit(0);
   },
   decode: () => {
     console.log("Running decode command");
@@ -119,6 +123,7 @@ const handlers = {
   },
 };
 
+// if unknown command provided. Display unknown command selected.
 if (!Object.hasOwn(commands, cleanedCommand)) {
   console.error(`Unknown command: ${cleanedCommand}`);
   process.exit(1);
@@ -127,14 +132,11 @@ if (!Object.hasOwn(commands, cleanedCommand)) {
 let invokedMethod = handlers[cleanedCommand];
 invokedMethod();
 
-function userSelectedOperation(cleanedCommand) {
-  console.log("Fns 1");
-  if (Object.hasOwn(recordTypes, cleanedCommand)) {
-    let supportedFn = recordTypes[cleanedCommand];
+function userSelectedOperation(selectedCmd) {
+  if (Object.hasOwn(recordTypes, selectedCmd)) {
+    let supportedFn = recordTypes[selectedCmd];
     return supportedFn;
   } else {
     return 0;
   }
 }
-
-// Current blocker supported ops put and delete need a way to connect encode with put.

@@ -12,7 +12,6 @@ import {
 
 export const encodeDataToBytes = (recordType, key, value) => {
   try {
-    console.log("Fn2");
     let keyBuffer = Buffer.from(key);
     let valueBuffer = Buffer.from(value);
     // if key byte length is 0 throw error.
@@ -24,7 +23,9 @@ export const encodeDataToBytes = (recordType, key, value) => {
       throw new Error(`Invalid key received. Key cannot be empty.`);
     }
 
-    if (recordType !== recordTypes.put || recordType !== recordTypes.delete) {
+    if (
+      !(recordType !== recordTypes.put || recordType !== recordTypes.delete)
+    ) {
       throw new Error(
         `Unsupported operation selected. Only PUT and DELETE operations are supported.`,
       );
