@@ -2,7 +2,7 @@
 
 ### Project description
 
-A zero-dependency, file-backed, append-only key-value storage engine built from the ground up in Node.js. This project is a systems-engineering exercise designed to explore memory allocation, binary serialization, and crash-resilient storage mechanics.
+A zero-dependency, file-backed, append-only key-value storage engine built from the ground up in Node.js. This is a systems-engineering exercise designed to explore memory allocation, binary serialization, and crash-resilient storage mechanics.
 
 ### Why Build a Storage Engine?
 
