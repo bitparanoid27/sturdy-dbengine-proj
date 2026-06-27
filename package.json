@@ -16,7 +16,8 @@
     "recover": "node src/index.js recover",
     "compact": "node src/index.js compact",
     "bench": "node src/index.js bench",
-    "test": "node src/index.js test"
+    "test": "node src/index.js test",
+    "test-ed" : "node src/index.js test-ed"
   },
   "keywords": [],
   "author": "",

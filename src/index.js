@@ -10,6 +10,7 @@ import {
   recordTypes,
 } from "./format.js";
 import { encodeDataToBytes } from "./encoder.js";
+import { decodeBytesToData } from "./decoder.js";
 
 // Retrieve user selected command.
 const receivedCommand = argv[2];
@@ -31,14 +32,14 @@ let commands = {
   compact: "compresses data",
   bench: "run benchmark tests",
   test: "run tests on data",
+  "test-ed":
+    "run encoder and decoder to check the logic flow. Pure experimental will be deleted later.",
 };
 
 if (cleanedCommand === "help" || cleanedCommand === undefined) {
   console.log("Usage:");
   console.log("  npm run <command>\n");
-
   console.log("Commands:");
-
   for (const [element, desc] of Object.entries(commands)) {
     console.log(`  ${element.padEnd(16)}${desc}`);
   }
@@ -98,11 +99,19 @@ const handlers = {
       cleanedKey,
       cleanedValue,
     );
-    console.log(encodedBuffer);
+    console.log("Data encoded successfully");
+    let encodedBufferData = {
+      data: encodedBuffer,
+      selectedOps: cleanedRequestedOps,
+    };
+    return encodedBufferData;
     process.exit(0);
   },
-  decode: () => {
+  decode: (dataToBeDecoded) => {
     console.log("Running decode command");
+    let decodeFnRetData = decodeBytesToData(dataToBeDecoded);
+    console.log("Data decoded successfully");
+    console.log(decodeFnRetData);
     process.exit(0);
   },
   recover: () => {
@@ -120,6 +129,11 @@ const handlers = {
   test: () => {
     console.log("Running test command");
     process.exit(0);
+  },
+  "test-ed": () => {
+    console.log("Running the test-ed command");
+    let encodeFnRetData = handlers.encode();
+    handlers.decode(encodeFnRetData);
   },
 };
 
