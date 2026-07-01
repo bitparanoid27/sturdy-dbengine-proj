@@ -1,6 +1,9 @@
 // external modules
 import { Buffer } from "node:buffer";
-
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { mkdir } from "node:fs/promises";
+import * as fs from "node:fs/promises";
 // local modules
 import {
   header_size,
@@ -52,6 +55,39 @@ export const encodeDataToBytes = (recordType, key, value) => {
     keyBuffer.copy(requestedSpace, 28);
     valueBuffer.copy(requestedSpace, 28 + keyBuffer.length);
     return requestedSpace;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const writeDataToDisk = async (encodedData) => {
+  try {
+    // Retrieve file and folder name for the respective files.
+    const __fileName = fileURLToPath(import.meta.url);
+    const __dirName = path.dirname(__fileName);
+
+    const destinationDir = path.join(__dirName, "../", "data");
+    const destinationFile = path.join(destinationDir, "segment-0001.dat");
+    await mkdir(destinationDir, { recursive: true });
+
+    const fileHandle = await fs.open(destinationFile, "a+");
+    let fileDescriptor = fileHandle.fd;
+    let fileStats = await fileHandle.stat();
+    console.log(fileStats);
+
+    try {
+      await fileHandle.write(
+        encodedData,
+        0,
+        encodedData.length,
+        fileStats.size,
+      );
+      console.log("Data written to the file");
+    } catch (error) {
+      console.log("Error while data writing");
+      throw error;
+    }
+    fileHandle.close();
   } catch (error) {
     throw error;
   }

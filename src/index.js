@@ -9,7 +9,7 @@ import {
   formatLayout,
   recordTypes,
 } from "./format.js";
-import { encodeDataToBytes } from "./encoder.js";
+import { encodeDataToBytes, writeDataToDisk } from "./encoder.js";
 import { decodeBytesToData } from "./decoder.js";
 
 // Retrieve user selected command.
@@ -82,7 +82,7 @@ const handlers = {
 
     process.exit(0);
   },
-  encode: () => {
+  encode: async () => {
     // Retrieve requested ops put || delete, and data
     const requestedOps = argv[3];
     const receivedKey = argv[4];
@@ -104,6 +104,10 @@ const handlers = {
       data: encodedBuffer,
       selectedOps: cleanedRequestedOps,
     };
+
+    // save encoded data to the disk.
+    await writeDataToDisk(encodedBuffer);
+
     return encodedBufferData;
     process.exit(0);
   },
