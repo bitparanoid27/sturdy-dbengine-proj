@@ -61,6 +61,7 @@ export const encodeDataToBytes = (recordType, key, value) => {
 };
 
 export const writeDataToDisk = async (encodedData) => {
+  let fileHandle;
   try {
     // Retrieve file and folder name for the respective files.
     const __fileName = fileURLToPath(import.meta.url);
@@ -70,10 +71,9 @@ export const writeDataToDisk = async (encodedData) => {
     const destinationFile = path.join(destinationDir, "segment-0001.dat");
     await mkdir(destinationDir, { recursive: true });
 
-    const fileHandle = await fs.open(destinationFile, "a+");
+    fileHandle = await fs.open(destinationFile, "a+");
     let fileDescriptor = fileHandle.fd;
     let fileStats = await fileHandle.stat();
-    console.log(fileStats);
 
     try {
       await fileHandle.write(
@@ -87,8 +87,9 @@ export const writeDataToDisk = async (encodedData) => {
       console.log("Error while data writing");
       throw error;
     }
-    fileHandle.close();
   } catch (error) {
     throw error;
+  } finally {
+    fileHandle.close();
   }
 };

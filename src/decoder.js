@@ -10,7 +10,7 @@ import {
   recordTypes,
 } from "./format.js";
 
-export const decodeBytesToData = (encodedData) => {
+export const decodeBytesToData = async (encodedData) => {
   try {
     const { data, selectedOps } = encodedData;
 

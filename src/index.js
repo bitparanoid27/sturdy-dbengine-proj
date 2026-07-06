@@ -11,6 +11,7 @@ import {
 } from "./format.js";
 import { encodeDataToBytes, writeDataToDisk } from "./encoder.js";
 import { decodeBytesToData } from "./decoder.js";
+import { dataGenerator } from "./scanner.js";
 
 // Retrieve user selected command.
 const receivedCommand = argv[2];
@@ -57,8 +58,19 @@ const handlers = {
     console.log("Running get command");
     process.exit(0);
   },
-  scan: () => {
+  scan: async () => {
     console.log("Running scan command");
+    let counter = 1;
+    let result = [];
+    for await (const element of dataGenerator()) {
+      result.push(element);
+      counter++;
+      if (counter === 10) {
+        break;
+      }
+    }
+    console.log(result);
+    console.log("Scan command finished.");
     process.exit(0);
   },
   delete: () => {
@@ -89,7 +101,7 @@ const handlers = {
     const receivedValue = argv[5];
 
     const cleanedKey = receivedKey?.trim().toLowerCase();
-    const cleanedValue = receivedValue?.trim().toLowerCase();
+    const cleanedValue = receivedValue?.trim();
     const cleanedRequestedOps = requestedOps?.trim().toLowerCase();
 
     console.log("Running encode command");
@@ -134,9 +146,9 @@ const handlers = {
     console.log("Running test command");
     process.exit(0);
   },
-  "test-ed": () => {
+  "test-ed": async () => {
     console.log("Running the test-ed command");
-    let encodeFnRetData = handlers.encode();
+    let encodeFnRetData = await handlers.encode();
     handlers.decode(encodeFnRetData);
   },
 };
