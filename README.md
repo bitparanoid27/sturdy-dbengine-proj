@@ -50,9 +50,9 @@ To read data efficiently, the database encodes every write into a contiguous bin
 1. Project Shell and CLI Command Router (Completed)
 2. Binary Record Format Specification (Completed)
 3. Buffer Serialization and Record Encoding (Completed)
-4. Segment File Append-Only I/O (In Progress)
-5. Sequential Segment Scanning (Planned)
-6. Checksum Verification and Corruption Checks (Planned)
+4. Segment File Append-Only I/O (Completed)
+5. Sequential Segment Scanning (Completed)
+6. Checksum Verification and Corruption Checks (Completed)
 7. In-Memory Key Indexing (Planned)
 8. Compaction, Tombstones, and Crash Recovery (Planned)
 
