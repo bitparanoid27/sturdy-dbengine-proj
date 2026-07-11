@@ -14,22 +14,47 @@ import {
   recordTypes,
 } from "./format.js";
 import { decodeBytesToData } from "./decoder.js";
+import { checksumGenerator, verifyChecksum } from "./checksum.js";
+import { error } from "node:console";
 
-const readDataFromDisk = async (fileHandle, currentOffset) => {
+const readDataFromDisk = async (fileHandle, currentOffset, requestedOps) => {
   try {
     let tempBuffer = Buffer.alloc(header_size);
     await fileHandle.read(tempBuffer, 0, 28, currentOffset);
 
     const keyLength = tempBuffer.readUInt32BE(8);
     const valueLength = tempBuffer.readUInt32BE(12);
+    const checkSumValueFound = tempBuffer.readUInt32BE(24);
     const totalByteSize = header_size + keyLength + valueLength;
 
     let recordBuffer = Buffer.alloc(totalByteSize);
     await fileHandle.read(recordBuffer, 0, totalByteSize, currentOffset);
 
+    // Check if data is not tampered and allow user to run checksum enabled and disabled data check.
+    const checksumDisabled =
+      requestedOps?.trim()?.toLowerCase() === "checksum-disabled";
+    if (!checksumDisabled) {
+      const cksResult = verifyChecksum(
+        recordBuffer,
+        keyLength,
+        valueLength,
+        checkSumValueFound,
+      );
+      if (cksResult.checkSumData === -1) {
+        let errorObj = new Error("Checksum was not matched. Data corrupted");
+        errorObj.offset = currentOffset;
+        errorObj.code = "CHECKSUM_MISMATCH";
+        throw errorObj;
+      }
+    } else {
+      console.log(
+        "Checksum disabled operation being run. Data may or may not be tampered",
+      );
+    }
+
     // decode the data
     let bufferDataObject = { data: recordBuffer, selectedOps: "put" };
-    let decodedData = await decodeBytesToData(bufferDataObject);
+    let decodedData = decodeBytesToData(bufferDataObject);
     let data = {
       record: decodedData,
       dataLength: totalByteSize,
@@ -42,7 +67,7 @@ const readDataFromDisk = async (fileHandle, currentOffset) => {
 };
 
 // It's a JS generator that reads the record and provides the record for reading to the readDataFromDisk function.
-export async function* dataGenerator() {
+export async function* dataGenerator(requestedOps) {
   let fileHandle;
   try {
     const __fileName = fileURLToPath(import.meta.url);
@@ -61,6 +86,7 @@ export async function* dataGenerator() {
       const BufferDataToDecode = await readDataFromDisk(
         fileHandle,
         currentOffset,
+        requestedOps,
       );
       yield BufferDataToDecode.record;
       currentOffset += BufferDataToDecode.dataLength;

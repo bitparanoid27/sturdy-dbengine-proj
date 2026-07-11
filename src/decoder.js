@@ -10,17 +10,19 @@ import {
   recordTypes,
 } from "./format.js";
 
-export const decodeBytesToData = async (encodedData) => {
+export const decodeBytesToData = (encodedData) => {
   try {
-    const { data, selectedOps } = encodedData;
+    if (encodedData === undefined) {
+      throw new Error("Cannot decode an empty object.");
+    }
 
+    const { data, selectedOps } = encodedData;
     // Check for incomplete headers.
     if (data.length < header_size) {
       throw new Error("Incomplete headers received. Package discarded");
     }
 
-    // Check for the magic bytes
-    // read the bytes into utf8.
+    // Check for the magic bytes and read the bytes into utf8.
     const receivedMagicString = data.toString("utf8", 0, 4);
     const magicString = magic_string;
 

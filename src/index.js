@@ -59,14 +59,23 @@ const handlers = {
     process.exit(0);
   },
   scan: async () => {
+    const requestedOps = argv[3];
     console.log("Running scan command");
     let counter = 1;
     let result = [];
-    for await (const element of dataGenerator()) {
-      result.push(element);
-      counter++;
-      if (counter === 10) {
-        break;
+    try {
+      for await (const element of dataGenerator(requestedOps)) {
+        result.push(element);
+        counter++;
+        if (counter === 10) {
+          break;
+        }
+      }
+    } catch (error) {
+      if (error.code === "CHECKSUM_MISMATCH") {
+        console.error(`File corrupted at byte ${error.offset}.`);
+        console.log("Scan command finished.");
+        process.exit(1);
       }
     }
     console.log(result);
@@ -98,10 +107,10 @@ const handlers = {
     // Retrieve requested ops put || delete, and data
     const requestedOps = argv[3];
     const receivedKey = argv[4];
-    const receivedValue = argv[5];
+    const receivedValue = argv.slice(5);
 
     const cleanedKey = receivedKey?.trim().toLowerCase();
-    const cleanedValue = receivedValue?.trim();
+    const cleanedValue = receivedValue.map((item) => item.trim());
     const cleanedRequestedOps = requestedOps?.trim().toLowerCase();
 
     console.log("Running encode command");
